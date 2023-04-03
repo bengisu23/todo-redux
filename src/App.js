@@ -1,25 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import "./styles.css";
+import { listeyeEkle, isaretle, temizle} from "./actions";
 
-function App() {
+import { connect } from "react-redux";
+const App = (props) => {
+  const [text, SetText] = useState("");
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+      <h1>Yapılacaklar Listesi</h1>
+      <div className="ekleme_formu">
+        <input
+          placeholer="listeye ekle"
+          value={text}
+          onChange={(e) => SetText(e.target.value)}
+        />
+        <button
+          onClick={() => {
+            SetText("");
+            props.listeyeEkle(text);
+          }}
         >
-          Learn React
-        </a>
-      </header>
+          Ekle
+        </button>
+      </div>
+      <div className="liste">
+        {props.liste.map((item) => (
+          <div
+            onClick={() => props.isaretle(item.id)}
+            key={item.id}
+            className={item.tamamlandi ? "yapildi" : ""}
+          >
+            {item.baslik}
+          </div>
+        ))}
+      </div>
+      <button onClick={()=>props.temizle()} className="temizle">Tamamlananları Temizle</button>
     </div>
   );
-}
+};
 
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    liste: state.liste,
+  };
+};
+export default connect(mapStateToProps, { listeyeEkle, isaretle, temizle})(App);
